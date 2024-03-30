@@ -1,95 +1,131 @@
-﻿Public Class Form1
-    ' Using DateTime for accurate time comparison.
-    Dim currentTime As DateTime
-    Dim messageTime As DateTime
-    Dim reminderShown As Boolean = False
+﻿Imports System.IO
+Imports Newtonsoft.Json
 
-    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
-        ' Updating the current time display.
-        UpdateCurrentTime()
-    End Sub
-
+Public Class Form1
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' Initialize anything if needed, for example, setting up initial states of controls.
+        Try
+            LoadTasksFromFile()
+            ConfigureMaskedTextBoxes()
+            AddHandler TextBox1.TextChanged, AddressOf Input_Changed
+            AddHandler MaskedTextBoxDate.TextChanged, AddressOf Input_Changed
+            AddHandler MaskedTextBoxTime.TextChanged, AddressOf Input_Changed
+            ValidateInputs()
+        Catch ex As Exception
+            MsgBox("Error loading data.")
+        End Try
     End Sub
 
-    Private Sub Timer3_Tick(sender As Object, e As EventArgs) Handles Timer3.Tick
-        ' Checking if it's time to show the reminder.
-        CheckReminder()
+    Private Sub ConfigureMaskedTextBoxes()
+        ' Date configuration
+        MaskedTextBoxDate.Mask = "00/00/0000"
+        MaskedTextBoxDate.ValidatingType = GetType(System.DateTime)
+        ' Time configuration
+        MaskedTextBoxTime.Mask = "00:00"
+        MaskedTextBoxTime.ValidatingType = GetType(System.DateTime) ' Note: This is for simplicity; actual time validation happens in ValidateInputs.
     End Sub
 
-    Private Sub UpdateCurrentTime()
-        ' Gets the current time and updates the label.
-        currentTime = DateTime.Now
-        Label1.Text = currentTime.ToString("hh:mm:ss tt")
+    Private Sub Input_Changed(sender As Object, e As EventArgs)
+        ValidateInputs()
     End Sub
 
-    Private Sub CheckReminder()
-        ' Checks if the current time is equal or has passed the message time and if the reminder hasn't been shown yet.
-        If Not reminderShown AndAlso currentTime >= messageTime Then
-            ShowReminder()
-        End If
+    Private Sub ValidateInputs()
+        Dim dateValue As DateTime
+        Dim isValidDate As Boolean = DateTime.TryParse(MaskedTextBoxDate.Text, dateValue)
+        Dim timeValue As TimeSpan
+        Dim isValidTime As Boolean = TimeSpan.TryParse(MaskedTextBoxTime.Text, timeValue)
+        Dim isTaskNotEmpty As Boolean = Not String.IsNullOrWhiteSpace(TextBox1.Text)
+        ' Enable the Add button only if all conditions are met
+        Add.Enabled = isValidDate AndAlso isValidTime AndAlso isTaskNotEmpty
     End Sub
 
-    Private Sub ShowReminder()
-        ' Stops the timer, shows the message, and updates the UI accordingly.
-        Timer3.Stop()
-        MsgBox(TextBox1.Text)
-        Button1.Enabled = True
-        Button2.Enabled = False
-        Label4.Text = ""
-        reminderShown = True
-    End Sub
+    Private Shadows Sub Add_Click(sender As Object, e As EventArgs) Handles Add.Click
+        Dim taskName As String = TextBox1.Text.Trim()
+        Dim taskDate As String = MaskedTextBoxDate.Text
+        Dim taskTime As String = MaskedTextBoxTime.Text
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        ' Parses user input to set the reminder time and starts the timer.
-        SetReminder()
-        Timer3.Start()
-        Button1.Enabled = False
-        Button2.Enabled = True
-    End Sub
+        ' Since Add button is enabled only when inputs are valid, directly add the task.
+        If Not String.IsNullOrEmpty(taskName) Then
+            ' Add the new task with date and time
+            Dim newTask As New TaskItem(taskName, False, taskDate, taskTime)
+            ' Check if a similar task already exists (based on Name, Date, and Time)
+            Dim taskExists As Boolean = checktask.Items.Cast(Of TaskItem)().Any(Function(item) item.Name = newTask.Name AndAlso item.Date1 = newTask.Date1 AndAlso item.Time = newTask.Time)
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        ' Stops the reminder.
-        Timer3.Stop()
-        Button1.Enabled = True
-        Button2.Enabled = False
-        Label4.Text = ""
-        reminderShown = False ' Allows the reminder to be set again.
-    End Sub
-
-    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        ' Minimizes the application to the system tray and shows a balloon tip.
-        MinimizeToTray()
-    End Sub
-
-    Private Sub NotifyIcon1_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles NotifyIcon1.MouseDoubleClick
-        ' Restores the application from the system tray.
-        RestoreFromTray()
-    End Sub
-
-    Private Sub SetReminder()
-        ' Assuming MaskedTextBox1 contains the time in HH:MM format and ComboBox1 contains AM/PM.
-        Dim parsedTime As DateTime
-        If DateTime.TryParseExact(MaskedTextBox1.Text & " " & ComboBox1.Text, "hh:mm:ss tt", Nothing, Globalization.DateTimeStyles.None, parsedTime) Then
-            ' Set the message time for today with the specified time.
-            messageTime = DateTime.Today.Add(parsedTime.TimeOfDay)
-            Label4.Text = "Reminder set for: " & messageTime.ToString("hh:mm:ss tt")
-            reminderShown = False ' Ensures the reminder can trigger.
+            If Not taskExists Then
+                checktask.Items.Add(newTask, False)
+                TextBox1.Clear()
+                SaveTasksToFile()
+            Else
+                MessageBox.Show("This task with the same date and time has already been added.", "Duplicate Task", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End If
         Else
-            MessageBox.Show("Invalid time format. Please enter the time as HH:MM.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("Please enter a task.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+    Private Sub SaveTasksToFile()
+        Dim tasksList As New List(Of TaskItem)
+        For Each item As TaskItem In checktask.Items
+            tasksList.Add(item)
+        Next
+
+        Dim tasksJson As String = JsonConvert.SerializeObject(tasksList)
+        File.WriteAllText("tasks.json", tasksJson)
+    End Sub
+
+    Private Sub LoadTasksFromFile()
+        If File.Exists("tasks.json") Then
+            Dim tasksJson As String = File.ReadAllText("tasks.json")
+            Dim tasksList As List(Of TaskItem) = JsonConvert.DeserializeObject(Of List(Of TaskItem))(tasksJson)
+
+            checktask.Items.Clear() ' Clear existing items before loading new ones
+            For Each taskItem As TaskItem In tasksList
+                checktask.Items.Add(taskItem, taskItem.IsChecked)
+            Next
         End If
     End Sub
 
-    Private Sub MinimizeToTray()
-        NotifyIcon1.Visible = True
-        Me.Hide()
-        NotifyIcon1.ShowBalloonTip(3000)
+    Private Sub Delete_Click(sender As Object, e As EventArgs) Handles Delete.Click
+        ' Looping in reverse order to avoid skipping items due to removal shifting indices
+        For i As Integer = checktask.Items.Count - 1 To 0 Step -1
+            If checktask.GetItemChecked(i) Then ' If the item is checked (or selected, based on your UI)
+                checktask.Items.RemoveAt(i) ' Remove the item
+            End If
+        Next
+
+        SaveTasksToFile() ' Save the updated list of tasks to file
     End Sub
 
-    Private Sub RestoreFromTray()
-        Me.Show()
-        NotifyIcon1.Visible = False
+    Public Class TaskItem
+        Public Property Name As String
+        Public Property IsChecked As Boolean
+        Public Property Date1 As String
+        Public Property Time As String
+
+        Public Sub New(name As String, isChecked As Boolean, [date] As String, time As String)
+            Me.Name = name
+            Me.IsChecked = isChecked
+            Me.Date1 = [date]
+            Me.Time = time
+        End Sub
+        Public Overrides Function ToString() As String
+            ' Format the output to ensure it fits within the width of the checklist box
+            Dim nameLengthLimit As Integer = 20 ' Limit for the length of the task name
+            Dim formattedName As String = If(Name.Length > nameLengthLimit, Name.Substring(0, nameLengthLimit) & "...", Name)
+
+            ' Combine the task name and additional information (date and time) using a separator
+            Return $"{formattedName} | Date: {Date1}, Time: {Time}"
+        End Function
+    End Class
+
+    Private Sub exitbtn_Click(sender As Object, e As EventArgs) Handles exitbtn.Click
+        SaveTasksToFile()
+        Application.Exit()
+    End Sub
+
+    Private Sub MaskedTextBox_ValidationCompleted(sender As Object, e As TypeValidationEventArgs)
+        If Not e.IsValidInput Then
+            MessageBox.Show("Please enter a valid date or time.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            CType(sender, MaskedTextBox).Focus()
+        End If
     End Sub
 
 End Class

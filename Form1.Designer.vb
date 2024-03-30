@@ -22,139 +22,137 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        components = New ComponentModel.Container()
-        Label1 = New Label()
         Label2 = New Label()
         Label3 = New Label()
-        Timer1 = New Timer(components)
-        Timer2 = New Timer(components)
-        Timer3 = New Timer(components)
         TextBox1 = New TextBox()
-        Button1 = New Button()
-        Button2 = New Button()
-        Button3 = New Button()
-        MaskedTextBox1 = New MaskedTextBox()
-        ComboBox1 = New ComboBox()
-        NotifyIcon1 = New NotifyIcon(components)
+        Delete = New Button()
+        MaskedTextBoxDate = New MaskedTextBox()
         Label4 = New Label()
+        mytasks = New Label()
+        checktask = New CheckedListBox()
+        Add = New Button()
+        MaskedTextBoxTime = New MaskedTextBox()
+        exitbtn = New Button()
         SuspendLayout()
-        ' 
-        ' Label1
-        ' 
-        Label1.AutoSize = True
-        Label1.Location = New Point(25, 32)
-        Label1.Name = "Label1"
-        Label1.Size = New Size(0, 20)
-        Label1.TabIndex = 0
         ' 
         ' Label2
         ' 
         Label2.AutoSize = True
-        Label2.Location = New Point(25, 89)
+        Label2.Location = New Point(24, 170)
         Label2.Name = "Label2"
-        Label2.Size = New Size(42, 20)
+        Label2.Size = New Size(151, 20)
         Label2.TabIndex = 1
-        Label2.Text = "Time"
+        Label2.Text = "When is the deadline:"
         ' 
         ' Label3
         ' 
         Label3.AutoSize = True
-        Label3.Location = New Point(25, 152)
+        Label3.Location = New Point(25, 55)
         Label3.Name = "Label3"
-        Label3.Size = New Size(70, 20)
+        Label3.Size = New Size(128, 20)
         Label3.TabIndex = 2
-        Label3.Text = "Message:"
-        ' 
-        ' Timer1
-        ' 
-        Timer1.Enabled = True
-        ' 
-        ' Timer3
-        ' 
+        Label3.Text = "What is your task :"
         ' 
         ' TextBox1
         ' 
-        TextBox1.Location = New Point(25, 175)
+        TextBox1.Location = New Point(24, 82)
         TextBox1.Multiline = True
         TextBox1.Name = "TextBox1"
         TextBox1.Size = New Size(280, 78)
         TextBox1.TabIndex = 4
         ' 
-        ' Button1
+        ' Delete
         ' 
-        Button1.Location = New Point(110, 296)
-        Button1.Name = "Button1"
-        Button1.Size = New Size(94, 29)
-        Button1.TabIndex = 5
-        Button1.Text = "Start"
-        Button1.UseVisualStyleBackColor = True
+        Delete.Location = New Point(413, 345)
+        Delete.Name = "Delete"
+        Delete.Size = New Size(119, 29)
+        Delete.TabIndex = 5
+        Delete.Text = "Delete Tasks"
+        Delete.UseVisualStyleBackColor = True
         ' 
-        ' Button2
+        ' MaskedTextBoxDate
         ' 
-        Button2.Enabled = False
-        Button2.Location = New Point(110, 331)
-        Button2.Name = "Button2"
-        Button2.Size = New Size(94, 29)
-        Button2.TabIndex = 6
-        Button2.Text = "Stop"
-        Button2.UseVisualStyleBackColor = True
-        ' 
-        ' Button3
-        ' 
-        Button3.Location = New Point(211, 355)
-        Button3.Name = "Button3"
-        Button3.Size = New Size(94, 29)
-        Button3.TabIndex = 7
-        Button3.Text = "notify"
-        Button3.UseVisualStyleBackColor = True
-        ' 
-        ' MaskedTextBox1
-        ' 
-        MaskedTextBox1.Location = New Point(25, 112)
-        MaskedTextBox1.Mask = "00:00:00"
-        MaskedTextBox1.Name = "MaskedTextBox1"
-        MaskedTextBox1.Size = New Size(179, 27)
-        MaskedTextBox1.TabIndex = 8
-        ' 
-        ' ComboBox1
-        ' 
-        ComboBox1.FormattingEnabled = True
-        ComboBox1.Items.AddRange(New Object() {"AM", "PM"})
-        ComboBox1.Location = New Point(211, 112)
-        ComboBox1.Name = "ComboBox1"
-        ComboBox1.Size = New Size(94, 28)
-        ComboBox1.TabIndex = 9
-        ' 
-        ' NotifyIcon1
-        ' 
-        NotifyIcon1.BalloonTipIcon = ToolTipIcon.Info
-        NotifyIcon1.BalloonTipText = "reminder"
-        NotifyIcon1.Text = "NotifyIcon1"
+        MaskedTextBoxDate.Font = New Font("Segoe UI Semibold", 10.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        MaskedTextBoxDate.Location = New Point(24, 193)
+        MaskedTextBoxDate.Mask = "00/00/0000"
+        MaskedTextBoxDate.Name = "MaskedTextBoxDate"
+        MaskedTextBoxDate.Size = New Size(203, 31)
+        MaskedTextBoxDate.TabIndex = 8
+        MaskedTextBoxDate.TextAlign = HorizontalAlignment.Center
+        MaskedTextBoxDate.ValidatingType = GetType(Date)
         ' 
         ' Label4
         ' 
         Label4.AutoSize = True
-        Label4.Location = New Point(25, 256)
+        Label4.Location = New Point(25, 279)
         Label4.Name = "Label4"
         Label4.Size = New Size(0, 20)
         Label4.TabIndex = 10
+        ' 
+        ' mytasks
+        ' 
+        mytasks.AutoSize = True
+        mytasks.Location = New Point(323, 55)
+        mytasks.Name = "mytasks"
+        mytasks.Size = New Size(72, 20)
+        mytasks.TabIndex = 11
+        mytasks.Text = "My tasks :"
+        ' 
+        ' checktask
+        ' 
+        checktask.FormattingEnabled = True
+        checktask.Location = New Point(323, 81)
+        checktask.Name = "checktask"
+        checktask.Size = New Size(265, 246)
+        checktask.TabIndex = 12
+        ' 
+        ' Add
+        ' 
+        Add.Location = New Point(99, 242)
+        Add.Name = "Add"
+        Add.Size = New Size(128, 36)
+        Add.TabIndex = 13
+        Add.Text = "Add"
+        Add.UseVisualStyleBackColor = True
+        ' 
+        ' MaskedTextBoxTime
+        ' 
+        MaskedTextBoxTime.Font = New Font("Segoe UI Semibold", 10.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        MaskedTextBoxTime.Location = New Point(233, 193)
+        MaskedTextBoxTime.Mask = "00:00"
+        MaskedTextBoxTime.Name = "MaskedTextBoxTime"
+        MaskedTextBoxTime.Size = New Size(71, 31)
+        MaskedTextBoxTime.TabIndex = 14
+        MaskedTextBoxTime.TextAlign = HorizontalAlignment.Center
+        MaskedTextBoxTime.ValidatingType = GetType(Date)
+        ' 
+        ' exitbtn
+        ' 
+        exitbtn.BackColor = SystemColors.ActiveBorder
+        exitbtn.Location = New Point(553, 12)
+        exitbtn.Name = "exitbtn"
+        exitbtn.Size = New Size(35, 29)
+        exitbtn.TabIndex = 15
+        exitbtn.Text = "X"
+        exitbtn.UseVisualStyleBackColor = False
         ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(322, 400)
+        ClientSize = New Size(600, 425)
+        Controls.Add(exitbtn)
+        Controls.Add(MaskedTextBoxTime)
+        Controls.Add(Add)
+        Controls.Add(checktask)
+        Controls.Add(mytasks)
         Controls.Add(Label4)
-        Controls.Add(ComboBox1)
-        Controls.Add(MaskedTextBox1)
-        Controls.Add(Button3)
-        Controls.Add(Button2)
-        Controls.Add(Button1)
+        Controls.Add(MaskedTextBoxDate)
+        Controls.Add(Delete)
         Controls.Add(TextBox1)
         Controls.Add(Label3)
         Controls.Add(Label2)
-        Controls.Add(Label1)
-        FormBorderStyle = FormBorderStyle.FixedSingle
+        FormBorderStyle = FormBorderStyle.None
         MinimizeBox = False
         Name = "Form1"
         StartPosition = FormStartPosition.CenterScreen
@@ -162,20 +160,16 @@ Partial Class Form1
         ResumeLayout(False)
         PerformLayout()
     End Sub
-
-    Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents Label3 As Label
-    Friend WithEvents Timer1 As Timer
-    Friend WithEvents Timer2 As Timer
-    Friend WithEvents Timer3 As Timer
     Friend WithEvents TextBox1 As TextBox
-    Friend WithEvents Button1 As Button
-    Friend WithEvents Button2 As Button
-    Friend WithEvents Button3 As Button
-    Friend WithEvents MaskedTextBox1 As MaskedTextBox
-    Friend WithEvents ComboBox1 As ComboBox
-    Friend WithEvents NotifyIcon1 As NotifyIcon
+    Friend WithEvents Delete As Button
+    Friend WithEvents MaskedTextBoxDate As MaskedTextBox
     Friend WithEvents Label4 As Label
+    Friend WithEvents mytasks As Label
+    Friend WithEvents checktask As CheckedListBox
+    Friend WithEvents Add As Button
+    Friend WithEvents MaskedTextBoxTime As MaskedTextBox
+    Friend WithEvents exitbtn As Button
 
 End Class
